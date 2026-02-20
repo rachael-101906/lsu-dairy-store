@@ -1,5 +1,5 @@
-import { images } from ".../../constants/images";
 import { ImageBackground, ScrollView, View } from "react-native";
+import { images } from "../../constants/images";
 
 export default function Home() {
   return (
