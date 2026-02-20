@@ -72,7 +72,7 @@ const Store = () => {
           </View>
           <View className="flex-row items-center justify-between px-10 mt-5 mb-5">
             <TouchableOpacity className="flex-1 h-10 w-full bg-primary rounded-full">
-              Popular
+              <Text className="text-black text-center font-bold">Popular</Text>
             </TouchableOpacity>
             <TouchableOpacity className="flex-1 h-10 w-full">
               <Text>Ice Cream</Text>
