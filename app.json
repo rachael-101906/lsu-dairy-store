@@ -24,7 +24,12 @@
     "web": {
       "output": "static",
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       "favicon": "./assets/images/favicon.png"
+=======
+      "favicon": "./assets/images/main_logo.png",
+      "bundler": "metro"
+>>>>>>> Stashed changes
 =======
       "favicon": "./assets/images/main_logo.png",
       "bundler": "metro"
