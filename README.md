@@ -1,50 +1,132 @@
-# Welcome to your Expo app 👋
+# LSU Dairy Store App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile application designed to enhance the customer experience at the LSU Dairy Store by allowing users to view product availability, explore current ice cream flavors, and stay informed about store updates and events.
 
-## Get started
+The app focuses on providing real-time information and engagement features rather than ordering or payments, making it easy for customers to quickly check what the Dairy Store has available before visiting.
 
-1. Install dependencies
+### Overview
 
-   ```bash
-   npm install
-   ```
+The LSU Dairy Store is a popular destination for students, locals, and visitors in Baton Rouge. However, customers often arrive without knowing which ice cream flavors or other products are currently available.
 
-2. Start the app
+This app provides a convenient way for users to:
 
-   ```bash
-   npx expo start
-   ```
+- View current ice cream flavors and dairy products
+- Check stock availability for items like meat and other store products
+- Track rewards progress through a receipt-based rewards system
+- See the store’s latest Instagram posts
+- Receive notifications about early closures or special updates
+- Quickly access store hours, FAQs, and location information
 
-In the output, you'll find options to open the app in a
+The application is designed to improve accessibility to store information while keeping the in-store experience central, meaning purchases are not made directly through the app.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Target Users
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- LSU students
+- Baton Rouge locals
+- Tourists visiting the LSU campus
 
-## Get a fresh project
+### Core Features (MVP)
 
-When you're ready, run:
+#### Stock Viewer
 
-```bash
-npm run reset-project
-```
+Users can browse available items including:
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- Ice cream flavors
+- Dairy products
+- Meat stock
+- Drinks and other store merchandise
 
-## Learn more
+Items display availability status, including when products are sold out.
 
-To learn more about developing your project with Expo, look at the following resources:
+#### Rewards System
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Customers can scan receipts to earn rewards points.
 
-## Join the community
+Example reward structure:
 
-Join our community of developers creating universal apps.
+Buy 5 ice creams → earn 1 free reward
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Users track progress toward their next reward directly in the app.
+
+#### Home Dashboard
+
+The home page highlights important information including:
+
+- Rewards progress
+- Featured or popular ice cream flavors
+- Popular meat stock
+- Recent updates from the store
+- Latest Instagram posts
+
+#### Notifications
+
+Push notifications inform users about important updates such as:
+
+- Early store closures
+- Special announcements
+- Store updates
+
+#### Store Information
+
+A settings and information page includes:
+
+- Store hours
+- FAQs
+- Store location
+- Quick map access
+
+### Nice-to-Have Features
+
+Future improvements may include:
+
+- Photo gallery of the LSU Dairy Store
+- Animated cow-themed loading and sign-in screens
+- Flavor ratings and reviews
+- Favorites for frequently viewed items
+- Custom themes or backgrounds unlocked through rewards tiers
+
+### App Navigation
+
+The app uses a bottom tab navigation system with the following primary pages:
+
+- Home – dashboard and highlights
+- Scan – receipt scanning and rewards tracking
+- Ice Cream & Dairy Stock – product availability
+- Instagram – latest posts from the Dairy Store
+- Settings – FAQs, store hours, and location
+
+### Tech Stack
+
+Frontend
+- React Native (Expo)
+
+Backend
+- Node.js + Express
+
+Authentication
+- Firebase Authentication
+
+Database
+- Firestore (Firebase)
+
+Notifications
+- Firebase Cloud Messaging
+
+State Management
+- React Context
+
+### Development Approach
+
+The project is being developed using a Minimum Viable Product (MVP) approach. The initial version focuses on solving the core problems:
+
+- Viewing current stock
+- Tracking rewards
+- Accessing store information
+- Receiving important notifications
+
+Additional features will be added based on user feedback after the initial release.
+
+### Author
+
+Rachael Bergeron  
+Computer Science Student – Louisiana State University
