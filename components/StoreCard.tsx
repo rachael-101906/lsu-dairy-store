@@ -1,55 +1,47 @@
-import { Link } from "expo-router";
-import { useCallback, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { icons } from "../constants/icons";
+import { images } from "../constants/images";
 
-const StoreCard = (props: ProductProps) => {
-  const [isFavorite, setIsFavorite] = useState<Product[]>([]);
+interface StoreCardProps {
+  product: any;
+  isFavorite: boolean;
+  onLikedPress: (product: any) => void;
+}
 
-  const handleLikedProduct = useCallback(() => {
-    setIsFavorite((prev) => {
-      if (prev.includes(props.product.id)) {
-        console.log("removing from favorites: ", props.product.id);
-        alert("Removed from favorites");
-        return prev.filter((id) => id !== props.product.id);
-      } else {
-        console.log("adding to favorites: ", props.product.id);
-        alert("Added to favorites");
-        return [...prev, props.product.id];
-      }
-    });
-  }, []);
-
+export default function StoreCard({
+  product,
+  isFavorite,
+  onLikedPress,
+}: StoreCardProps) {
   return (
-    <Link href={`/store/${props.product.id}`} asChild>
-      {/* Outermost View for the Card */}
-      <TouchableOpacity className="px-1/2 py-2 mt-2">
-        {/* Start of View for the Card */}
-        <View className="bg-white w-[200px] h-[320px] rounded-3xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] border border-black mx-auto">
-          {/* Heart Icon in the Top Right Corner */}
-          <View className="absolute top-4 right-4 z-10">
-            <View className="bg-primary/20 rounded-full py-2 px-3">
-              {isFavorite.includes(props.product.id) ? (
-                <TouchableOpacity onPress={handleLikedProduct}>
-                  <Image source={icons.heartFilled} className="w-5 h-5" />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity onPress={handleLikedProduct}>
-                  <Image source={icons.heart} className="w-5 h-5" />
-                </TouchableOpacity>
-              )}
-            </View>
-          </View>
+    /* Outermost View for the Card */
+    <View className="items-start py-3">
+      {/* Start of View for the Card */}
+      <View className="bg-white w-[200px] h-[320px] rounded-3xl shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] border border-black overflow-hidden">
+        {/* Heart Icon in the Top Right Corner */}
+        <TouchableOpacity
+          onPress={() => onLikedPress(product)}
+          className="absolute top-4 right-4 z-10 bg-primary/20 rounded-full py-2 px-3"
+        >
+          <Image
+            source={isFavorite ? icons.heartFilled : icons.heart}
+            className="w-5 h-5"
+          />
+        </TouchableOpacity>
 
+        <TouchableOpacity
+          className="flex-1 items-center"
+          onPress={() => alert("View more details coming soon!")}
+        >
           {/* Inner View for the Title of Flavor and Picture */}
           <View className="w-full h-full pt-6 px-3 pb-3 items-center flex-1">
             {/* Flavor Picture */}
             <View className="w-32 h-32 mb-3">
               <Image
-                source={{
-                  uri: props.product.image,
-                }}
-                className="w-full h-full"
+                source={
+                  product.available ? { uri: product.image } : images.sadCow
+                }
+                className={`w-full h-full ${!product.available && "rounded-full bg-primary-20 p-2"}`}
                 resizeMode="contain"
               ></Image>
             </View>
@@ -59,15 +51,17 @@ const StoreCard = (props: ProductProps) => {
               className="text-primary font-extrabold text-2xl text-center"
               numberOfLines={2}
             >
-              {props.product.flavor}
+              {product.flavor}
             </Text>
             <Text
               className="text-black font-normal text-sm text-center leading-5 p-3"
               numberOfLines={4}
             >
-              {props.product.description}
+              {product.available
+                ? product.description
+                : "Sorry, this flavor is currently unavailable."}
             </Text>
-            <View className="fixed w-full mt-auto">
+            <View className=" w-full mt-auto">
               <View className="h-10 justify-center items-center bg-primary rounded-full border border-black">
                 <Text className="text-black text-sm font-medium text-center">
                   View More Details
@@ -75,15 +69,8 @@ const StoreCard = (props: ProductProps) => {
               </View>
             </View>
           </View>
-        </View>
-      </TouchableOpacity>
-    </Link>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
-};
-
-export default StoreCard;
-
-///// Notes
-
-// also have to create a useEffect if someone clicks on a flavor
-// and then it will pull up the details of that flavor and then display it in a new screen
+}
