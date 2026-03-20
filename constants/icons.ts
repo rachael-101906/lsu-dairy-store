@@ -1,10 +1,10 @@
 import account from "../assets/icons/account_circle.png";
 import backArrow from "../assets/icons/back_arrow.png";
-import forwardArrow from "../assets/icons/foreword_arrow.png";
-// import cowLock from "../assets/icons/.png";
+import blackHeart from "../assets/icons/black_heart.png";
 import heart from "../assets/icons/favorite.png";
 import heartFilled from "../assets/icons/favoriteFilled.png";
 import filter from "../assets/icons/filter.png";
+import forwardArrow from "../assets/icons/foreword_arrow.png";
 import google from "../assets/icons/google-logo.png";
 import home from "../assets/icons/home.png";
 import iceCreamTab from "../assets/icons/icecream.png";
@@ -27,7 +27,7 @@ export const icons = {
   account,
   forwardArrow,
   backArrow,
-
+  blackHeart,
   scanner,
   heart,
   heartFilled,
@@ -36,7 +36,6 @@ export const icons = {
   home,
   iceCreamTab,
   info,
-
   mail,
   microsoft,
   passwordKey,
