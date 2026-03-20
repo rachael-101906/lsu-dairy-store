@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "lsu-dairy-store",
+    "name": "LSU Dairy Store",
     "slug": "lsu-dairy-store",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,7 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rachaelbergeron.lsudairystore"
     },
     "android": {
       "adaptiveIcon": {
@@ -38,7 +39,8 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
