@@ -2,7 +2,7 @@ import { BackButton } from "@/components/BackButton";
 import { images } from "@/constants/images";
 import { useAuth } from "@/context/authContext";
 import { Octicons } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Image,
@@ -35,14 +35,15 @@ export default function Login() {
       setLoading(true);
       await login(email, password);
       console.log("User account created & signed in!");
-    } catch (error: any) {
-      if (error.code === "auth/invalid-email") {
-        alert("The email address is not valid.");
-      } else if (error.code === "auth/email-already-in-use") {
-        alert("That email is already in use.");
-      } else {
-        alert(error.message);
-      }
+      router.push("/");
+    } catch (error) {
+      alert(
+        (error as Error).message ||
+          "An error occurred during login. Please try again.",
+      );
+      router.push("/login");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,8 +51,13 @@ export default function Login() {
     try {
       setLoading(true);
       await login("admin@gmail.com", "puppy!");
-    } catch (error: any) {
-      alert(error.message);
+    } catch (error) {
+      alert(
+        (error as Error).message ||
+          "An error occurred during admin login. Please try again.",
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -85,12 +91,16 @@ export default function Login() {
             <View className="flex-row items-center h-[70px] w-full px-6 border border-black rounded-full">
               <Octicons name="mail" size={20} color="gray" />
               <TextInput
-                className="flex-1 h-full ml-4"
+                className="flex-1 h-full ml-4 bg-transparent"
                 placeholder="Enter your email"
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
                 keyboardType="email-address"
+                autoComplete="email"
+                textContentType="emailAddress"
+                importantForAutofill="yes"
+                placeholderTextColor="#999"
               />
             </View>
 
@@ -98,11 +108,15 @@ export default function Login() {
             <View className="flex-row items-center h-[70px] w-full px-6 border border-black rounded-full mt-4">
               <Octicons name="lock" size={20} color="gray" />
               <TextInput
-                className="flex-1 h-full ml-4"
+                className="flex-1 h-full ml-4 bg-transparent"
                 placeholder="Enter your password"
                 secureTextEntry={!showPassword}
                 value={password}
                 onChangeText={setPassword}
+                autoComplete="current-password"
+                textContentType="password"
+                importantForAutofill="yes"
+                placeholderTextColor="#999"
               />
               <TouchableOpacity onPress={handleTogglePasswordVisibility}>
                 <Octicons

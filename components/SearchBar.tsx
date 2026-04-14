@@ -26,6 +26,7 @@ const SearchBar = ({
         onChangeText={onChangeText}
         placeholderTextColor={"#000000"}
         className="flex-1 text-black ml-3"
+        autoComplete="off"
       />
     </View>
   );

@@ -14,19 +14,19 @@ import {
 
 export default function Register() {
   const router = useRouter();
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [isStudent, setIsStudent] = useState<boolean | null>(null);
   const [disabled, setDisabled] = useState(true);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (name && lastName && isStudent !== null) {
+    if (firstName && lastName && isStudent !== null) {
       setDisabled(false);
     } else {
       setDisabled(true);
     }
-  }, [name, lastName, isStudent]);
+  }, [firstName, lastName, isStudent]);
 
   const handleNext = async () => {
     try {
@@ -35,13 +35,23 @@ export default function Register() {
         alert("Please fill out all fields and select an option.");
         return;
       }
-      console.log("Name: ", name);
-      console.log("Last Name: ", lastName);
-      console.log("LSU Student: ", isStudent);
-      await router.push("/register");
+      console.log(
+        "Name: ",
+        firstName + " " + lastName + " Is Student: " + isStudent,
+      );
+      await router.push({
+        pathname: "/register",
+        params: {
+          firstName,
+          lastName,
+          isStudent: isStudent ? "true" : "false",
+        },
+      });
     } catch (error) {
-      console.error("Form error: ", error);
-      alert("Failed to proceed. Please check your credentials and try again.");
+      alert(
+        (error as Error).message ||
+          "An error occurred during registration. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -75,7 +85,7 @@ export default function Register() {
         <Text className="text-black text-[30px] font-extrabold mt-10 px-6 items-center">
           Welcome to the Dairy Store App!
         </Text>
-        <Text className="text-gray text-[20px] font-normal mt-10 px-6 items-center">
+        <Text className="text-gray text-[20px] font-light mt-10 px-6 items-center">
           We have just a few questions before you join LSU&apos;s iconic sweet
           treat spot. Please fill out the information below.
         </Text>
@@ -85,16 +95,22 @@ export default function Register() {
             <TextInput
               className="h-[70px] w-fit px-10 rounded-full items-center justify-center border border-gray"
               placeholder="First Name"
-              value={name}
-              onChangeText={setName}
+              value={firstName}
+              onChangeText={setFirstName}
               autoCapitalize="none"
-              keyboardType="email-address"
+              autoComplete="name"
+              keyboardType="default"
+              placeholderTextColor="#999"
             />
             <TextInput
               className="h-[70px] w-fit px-10 rounded-full items-center justify-center border border-gray mt-4"
               placeholder="Last Name"
               value={lastName}
               onChangeText={setLastName}
+              autoCapitalize="none"
+              autoComplete="family-name"
+              keyboardType="default"
+              placeholderTextColor="#999"
             />
           </KeyboardAvoidingView>
 

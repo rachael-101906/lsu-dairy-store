@@ -13,6 +13,19 @@
       "bundleIdentifier": "com.rachaelbergeron.lsudairystore"
     },
     "android": {
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data":[
+            {
+              "scheme": "https",
+              "host": "lsu-dairy-store.com",
+              "pathPrefix": "/"
+            }
+          ]
+        }
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/main_logo.png",
