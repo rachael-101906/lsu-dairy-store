@@ -1,7 +1,9 @@
 import { BackButton } from "@/components/BackButton";
 import { images } from "@/constants/images";
 import { useAuth } from "@/context/authContext";
+import { saveUser } from "@/services/useMembers";
 import { Octicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Image,
@@ -24,6 +26,8 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { firstName, lastName, isStudent } = useLocalSearchParams();
+  const isStudentBool = isStudent === "true" ? true : false;
 
   useEffect(() => {
     setIsDisabled(!isChecked || !email || !password || !confirmPassword);
@@ -37,10 +41,26 @@ export default function Register() {
 
     try {
       setLoading(true);
-      await register(email, password, confirmPassword);
+      const response = await register(
+        email,
+        password,
+        confirmPassword,
+        firstName as string,
+      );
+      await saveUser(
+        response.user.uid,
+        email,
+        firstName as string,
+        lastName as string,
+        isStudentBool,
+      );
+      console.log("Registration successful!", response);
+      router.push("/");
     } catch (error) {
-      console.error("Signup error: ", error);
-      alert("Failed to sign up. Please check your credentials and try again.");
+      alert(
+        (error as Error).message ||
+          "An error occurred during registration. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -79,12 +99,15 @@ export default function Register() {
             <View className="flex-row items-center h-[70px] w-full px-6 border border-black rounded-full">
               <Octicons name="mail" size={20} color="gray" />
               <TextInput
-                className="flex-1 h-full ml-4"
+                className="flex-1 h-full ml-4 bg-transparent"
                 placeholder="Enter your email"
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
+                autoComplete="email"
                 keyboardType="email-address"
+                textContentType="emailAddress"
+                placeholderTextColor="#999"
               />
             </View>
 
@@ -92,11 +115,15 @@ export default function Register() {
             <View className="flex-row items-center h-[70px] w-full px-6 border border-black rounded-full mt-4">
               <Octicons name="lock" size={20} color="gray" />
               <TextInput
-                className="flex-1 h-full ml-4"
+                className="flex-1 h-full ml-4 bg-transparent"
                 placeholder="Enter your password"
                 secureTextEntry={!showPassword}
                 value={password}
                 onChangeText={setPassword}
+                autoCapitalize="none"
+                autoComplete="password"
+                textContentType="password"
+                placeholderTextColor="#999"
               />
               <TouchableOpacity onPress={handleTogglePasswordVisibility}>
                 <Octicons
@@ -110,11 +137,15 @@ export default function Register() {
             <View className="flex-row items-center h-[70px] w-full px-6 border border-black rounded-full mt-4">
               <Octicons name="lock" size={20} color="gray" />
               <TextInput
-                className="flex-1 h-full ml-4"
+                className="flex-1 h-full ml-4 bg-transparent"
                 placeholder="Confirm password"
                 secureTextEntry={!showConfirmPassword}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
+                autoCapitalize="none"
+                autoComplete="password"
+                textContentType="password"
+                placeholderTextColor="#999"
               />
               <TouchableOpacity onPress={handleToggleConfirmPasswordVisibility}>
                 <Octicons
@@ -130,12 +161,9 @@ export default function Register() {
               <BouncyCheckbox
                 size={25}
                 fillColor="#E2A9F1"
-                unfillColor="#FFFFFF"
+                unFillColor="#FFFFFF"
                 text="By using the LSU Dairy Store App, you acknowledge that you have read, understood, and agreed to these Terms and Conditions of the LSU Dairy Store."
                 innerIconStyle={{
-                  borderWidth: 4,
-                }}
-                outerIconStyle={{
                   borderWidth: 4,
                 }}
                 iconStyle={{ borderColor: "black" }}

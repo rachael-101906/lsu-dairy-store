@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import StoreCard from "@/components/StoreCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -27,7 +27,6 @@ const chunkArray = (arr: any[], size: number): any[][] => {
 const Store = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { products, isLoading, error } = useFlavors();
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [activeFilter, setActiveFilter] = useState<string>("");
   const [isFavorite, setIsFavorite] = useState<string[]>([]);
 
@@ -55,16 +54,18 @@ const Store = () => {
       if (favorites) {
         setIsFavorite(JSON.parse(favorites));
       }
-    } catch (error) {
-      console.error("Error loading favorites: ", error);
+    } catch (error: any) {
+      console.error("Error loading favorites: ", error.message);
+      alert(error.message);
     }
   }, []);
 
   const saveFavorites = useCallback(async () => {
     try {
       await AsyncStorage.setItem("favorites", JSON.stringify(isFavorite));
-    } catch (error) {
-      console.error("Error saving favorites: ", error);
+    } catch (error: any) {
+      console.error("Error saving favorites: ", error.message);
+      alert(error.message);
     }
   }, [isFavorite]);
 
@@ -76,38 +77,29 @@ const Store = () => {
     saveFavorites();
   }, [isFavorite, saveFavorites]);
 
-  useEffect(() => {
-    if (!products) return;
+  const favoriteIds = useMemo(() => new Set(isFavorite), [isFavorite]);
+
+  const filteredProducts = useMemo(() => {
+    let filtered = products;
 
     if (searchQuery.trim()) {
-      const searchedProducts = products.filter((product) =>
+      filtered = filtered.filter((product) =>
         product.flavor?.toLowerCase().includes(searchQuery.toLowerCase()),
       );
-      setFilteredProducts(searchedProducts);
-    } else {
-      setFilteredProducts(products);
     }
 
     if (activeFilter === "Favorites") {
-      const favoriteProducts = products.filter((product) =>
-        isFavorite.includes(product.id),
-      );
-      setFilteredProducts(favoriteProducts);
+      filtered = filtered.filter((product) => favoriteIds.has(product.id));
     } else if (activeFilter === "Ice Cream") {
-      const iceCreamProducts = products.filter(
-        (product) => product.type === "icecream",
-      );
-      setFilteredProducts(iceCreamProducts);
+      filtered = filtered.filter((product) => product.type === "icecream");
     } else if (activeFilter === "Meat") {
-      const meatProducts = products.filter(
-        (product) => product.type === "meat",
-      );
-      setFilteredProducts(meatProducts);
+      filtered = filtered.filter((product) => product.type === "meat");
     } else if (activeFilter === "Popular") {
-      const popularProducts = products.filter((product) => product.isPopular);
-      setFilteredProducts(popularProducts);
+      filtered = filtered.filter((product) => product.isPopular);
     }
-  }, [searchQuery, products, activeFilter, isFavorite]);
+
+    return filtered;
+  }, [products, searchQuery, activeFilter, favoriteIds]);
 
   const iceCreamProducts = filteredProducts.filter(
     (product) => product.type === "icecream",
@@ -133,7 +125,7 @@ const Store = () => {
   const ListHeader = () => (
     <>
       <Header />
-      <View>
+      <View pointerEvents="none">
         <Image
           source={images.iceCreamBackground}
           className="w-full mb-5 z-0 overflow-hidden"
@@ -237,7 +229,7 @@ const Store = () => {
 const noProducts = () => (
   <View className="w-full h-32 items-center justify-center mt-20 gap-4">
     <Text className="text-gray-500 text-3xl px-6 text-center">
-      We're sorry, there are no products available in this category.
+      We&apos;re sorry, there are no products available in this category.
     </Text>
   </View>
 );
