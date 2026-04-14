@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getApp, getApps, initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import * as FirebaseAuth from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
@@ -22,10 +23,27 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 export const db = getFirestore(app);
-export const auth = getAuth(app);
+// initializeAuth can throw on fast refresh if auth was already initialized.
+export const auth = (() => {
+  const getReactNativePersistence = (
+    FirebaseAuth as typeof FirebaseAuth & {
+      getReactNativePersistence?: (
+        storage: typeof AsyncStorage,
+      ) => FirebaseAuth.Persistence;
+    }
+  ).getReactNativePersistence;
+
+  try {
+    if (getReactNativePersistence) {
+      return FirebaseAuth.initializeAuth(app, {
+        persistence: getReactNativePersistence(AsyncStorage),
+      });
+    }
+
+    return FirebaseAuth.getAuth(app);
+  } catch {
+    return FirebaseAuth.getAuth(app);
+  }
+})();
 
 export const storage = getStorage(app);
-/* export const auth = initializeAuth(app, {
-  persistence: (getReactNativePersistence as any)(ReactNativeAsyncStorage),
-});
-*/

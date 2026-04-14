@@ -10,6 +10,24 @@ interface Product {
   meatType?: string; // this can be used for meat products to specify the type of meat (e.g., "beef", "pork", etc.)
 }
 
+interface User {
+  uid: string;
+  firstName: string;
+  lastName: string;
+  isStudent: boolean;
+  email: string;
+}
+
 interface ProductProps {
   product: any;
+}
+
+interface Receipt {
+  storeName: string;
+  date: string;
+  valid: boolean;
+  subtotal: number;
+  receiptId: string;
+  time: string;
+  error: string | null;
 }

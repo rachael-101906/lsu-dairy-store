@@ -23,7 +23,7 @@ export const useFlavors = () => {
         setIsLoading(false);
       },
       (err) => {
-        console.error("Error fetching ice cream: MOOOOOO", err);
+        console.error("Error fetching ice cream. Please try again.", err);
         setError(err.message);
         setIsLoading(false);
       },
