@@ -14,13 +14,19 @@ export default function Header() {
         Hey there, {displayName}!
       </Text>
       <View className="flex-row gap-4">
-        <TouchableOpacity onPress={() => route.push("/(tabs)/store")}>
+        <TouchableOpacity
+          onPress={() =>
+            route.push({
+              pathname: "/(tabs)/store",
+              params: { filter: "Favorites" },
+            })
+          }
+        >
           <Image
             source={icons.blackHeart}
             className="w-10 h-10 "
             resizeMode="contain"
           />
-          s
         </TouchableOpacity>
         <TouchableOpacity onPress={() => route.push("/(screens)/Account")}>
           <Image source={icons.account} className="w-10 h-10" />

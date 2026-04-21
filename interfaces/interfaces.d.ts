@@ -31,3 +31,12 @@ interface Receipt {
   time: string;
   error: string | null;
 }
+
+interface Coupon {
+  userId: string;
+  createdAt: Date;
+  status: string; // e.g., "active", "redeemed", "expired"
+  couponId: string; // unique identifier for the coupon
+  couponCode: string; // the actual code that can be redeemed
+  expirationDate: Date; // when the coupon expires
+}

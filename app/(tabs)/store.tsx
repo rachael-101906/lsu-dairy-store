@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import StoreCard from "@/components/StoreCard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -26,6 +27,7 @@ const chunkArray = (arr: any[], size: number): any[][] => {
 
 const Store = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const params = useLocalSearchParams();
   const { products, isLoading, error } = useFlavors();
   const [activeFilter, setActiveFilter] = useState<string>("");
   const [isFavorite, setIsFavorite] = useState<string[]>([]);
@@ -100,6 +102,12 @@ const Store = () => {
 
     return filtered;
   }, [products, searchQuery, activeFilter, favoriteIds]);
+
+  if (typeof params.filter === "string") {
+    useEffect(() => {
+      setActiveFilter(params.filter as string);
+    }, [params.filter]);
+  }
 
   const iceCreamProducts = filteredProducts.filter(
     (product) => product.type === "icecream",

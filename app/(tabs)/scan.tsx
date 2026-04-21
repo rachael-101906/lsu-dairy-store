@@ -1,9 +1,11 @@
+import { useAuth } from "@/context/authContext";
 import { addPoints, saveReceipt } from "@/services/receiptService";
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
-export default function Scan({ userId }: { userId: string }) {
+export default function Scan() {
+  const { user } = useAuth();
   const [image, setImage] = useState<string | null>(null);
   const [base64Image, setBase64Image] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);
@@ -15,9 +17,6 @@ export default function Scan({ userId }: { userId: string }) {
     if (permissionResult.granted === false) {
       alert("Camera access is required to scan receipts.");
       return;
-    } else if (permissionResult.granted === null) {
-      alert("Camera permission is required to scan receipts.");
-      return;
     }
 
     const result = await ImagePicker.launchCameraAsync({
@@ -25,9 +24,16 @@ export default function Scan({ userId }: { userId: string }) {
       quality: 0.8,
     });
 
+    console.log("ImagePicker result:", result);
+
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      const localBase64 = result.assets[0].base64;
+      const firstAsset = result?.assets?.[0];
+      if (!firstAsset.uri) {
+        alert("No image was captured. Please try again.");
+        return;
+      }
+      setImage(firstAsset.uri);
+      const localBase64 = firstAsset.base64;
 
       if (localBase64) {
         setBase64Image(localBase64);
@@ -42,12 +48,17 @@ export default function Scan({ userId }: { userId: string }) {
 
   const processReceipt = async (localBase64: string) => {
     if (!localBase64) return;
+    if (!user || !user.uid) {
+      alert("User not authenticated. Please log in and try again.");
+      return;
+    }
 
     setScanning(true);
     setScanResult(null);
 
     try {
       const apiUrl = process.env.EXPO_PUBLIC_CLAUDE_API_URL;
+
       if (!apiUrl) {
         throw new Error("Missing EXPO_PUBLIC_CLAUDE_API_URL");
       }
@@ -56,7 +67,7 @@ export default function Scan({ userId }: { userId: string }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": apiUrl || "",
+          "x-api-key": process.env.EXPO_PUBLIC_CLAUDE_API_KEY || "",
           "anthropic-version": "2023-06-01",
         },
         body: JSON.stringify({
@@ -99,14 +110,55 @@ export default function Scan({ userId }: { userId: string }) {
         }),
       });
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `API request failed with status ${response.status}: ${errorText}`,
+        );
+      }
+
       const result = await response.json();
-      const extractedData = result.content[0].text;
-      const scanResult = JSON.parse(extractedData);
+      const extractedData = result?.content?.[0];
+
+      if (
+        !extractedData ||
+        extractedData.type !== "text" ||
+        !extractedData.text
+      ) {
+        throw new Error(
+          "The scanner could not extract text from the receipt. Please try again with a clearer image.",
+        );
+      }
+
+      let scanResult: Receipt;
+
+      try {
+        scanResult = JSON.parse(extractedData.text);
+      } catch {
+        throw new Error(
+          "The scanner could not parse the extracted information. Please try again with a clearer image.",
+        );
+      }
+
+      if (
+        !scanResult.receiptId ||
+        !scanResult.storeName ||
+        !scanResult.date ||
+        scanResult.subtotal === null ||
+        scanResult.subtotal === undefined ||
+        scanResult.valid === undefined ||
+        scanResult.error === undefined
+      ) {
+        throw new Error(
+          "The scanner could not extract all necessary information from the receipt. Please try again with a clearer image.",
+        );
+      }
+
       setScanResult(scanResult);
 
       if (scanResult.valid === true) {
         await saveReceiptData(scanResult);
-        await addPoints(userId, scanResult.subtotal);
+        await addPoints(user.uid, scanResult.subtotal);
       }
     } catch (error) {
       alert(
@@ -118,10 +170,29 @@ export default function Scan({ userId }: { userId: string }) {
     }
   };
 
+  const randomReceiptTest = async () => {
+    const dummyData: Receipt = {
+      date: "2024-01-01",
+      time: "12:00 PM",
+      receiptId: Math.floor(1000 + Math.random() * 9000).toString(),
+      storeName: "LSU Dairy Store",
+      subtotal: 15.99,
+      valid: true,
+      error: null,
+    };
+    setScanResult(dummyData);
+    await saveReceiptData(dummyData);
+    await addPoints(user!.uid, dummyData.subtotal);
+  };
+
   const saveReceiptData = async (scanResult: Receipt) => {
+    if (!user || !user.uid) {
+      alert("User not authenticated. Please log in and try again.");
+      return;
+    }
     try {
       await saveReceipt(
-        userId,
+        user.uid,
         scanResult.storeName,
         scanResult.date,
         scanResult.valid,
@@ -149,9 +220,16 @@ export default function Scan({ userId }: { userId: string }) {
       {image && (
         <View className="mt-4 items-center justify-center">
           <Text className="text-lg font-medium">Captured Receipt:</Text>
-          <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
+          <Image source={{ uri: image }} style={{ width: 200, height: 300 }} />
         </View>
       )}
+      <TouchableOpacity
+        className="mt-4 px-4 py-2 font-normal bg-primary rounded"
+        onPress={randomReceiptTest}
+      >
+        <Text className="text-white text-lg">Dummmy Scan Test</Text>
+      </TouchableOpacity>
+      <Text className="mt-4 text-center text-gray-600"></Text>
     </View>
   );
 }
