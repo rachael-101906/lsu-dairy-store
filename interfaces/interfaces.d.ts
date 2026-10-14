@@ -22,9 +22,28 @@ interface ProductProps {
   product: any;
 }
 
+interface StoreCardProps {
+  product: any;
+  isFavorite: boolean;
+  onLikedPress: (product: any) => void;
+}
+
+type ListHeaderProps = {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  activeFilter: string;
+  handleFilterPress: (category: string) => void;
+};
+
+interface ItemDetailsProps {
+  product: any;
+  isFavorite: boolean;
+  onLikedPress: (product: any) => void;
+}
+
 interface Receipt {
   storeName: string;
-  date: string;
+  date: Date;
   valid: boolean;
   subtotal: number;
   receiptId: string;
@@ -40,3 +59,13 @@ interface Coupon {
   couponCode: string; // the actual code that can be redeemed
   expirationDate: Date; // when the coupon expires
 }
+
+type CouponGenerationParams = {
+  idToken: string;
+};
+
+type CouponGenerationResult = {
+  success: boolean;
+  couponId: string;
+  couponCode: string;
+};

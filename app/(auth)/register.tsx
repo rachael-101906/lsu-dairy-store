@@ -121,7 +121,6 @@ export default function Register() {
                 value={password}
                 onChangeText={setPassword}
                 autoCapitalize="none"
-                autoComplete="password"
                 textContentType="password"
                 placeholderTextColor="#999"
               />
@@ -143,7 +142,6 @@ export default function Register() {
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 autoCapitalize="none"
-                autoComplete="password"
                 textContentType="password"
                 placeholderTextColor="#999"
               />

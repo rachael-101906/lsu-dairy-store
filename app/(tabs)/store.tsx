@@ -25,6 +25,57 @@ const chunkArray = (arr: any[], size: number): any[][] => {
   return result;
 };
 
+const ListHeader = ({
+  searchQuery,
+  setSearchQuery,
+  activeFilter,
+  handleFilterPress,
+}: ListHeaderProps) => (
+  <>
+    <Header />
+    <View pointerEvents="none">
+      <Image
+        source={images.iceCreamBackground}
+        className="w-full mb-5 z-0 overflow-hidden"
+      />
+      <Image
+        source={images.happyCow}
+        className="w-[400px] h-[400px] absolute -top-[25px] right-[70px] z-10"
+        resizeMode="contain"
+      />
+    </View>
+
+    <View className="flex-row items-center justify-center px-10">
+      <SearchBar
+        placeHolder="Search for a cool flavor..."
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
+      <Image source={icons.filter} className="w-10 h-10" />
+    </View>
+
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      className="w-full h-20"
+    >
+      <View className="justify-between flex-row gap-6 mt-4 px-4">
+        {["Popular", "Ice Cream", "Meat", "Favorites"].map((category) => (
+          <TouchableOpacity
+            key={category}
+            className={`h-10 w-fit px-10 rounded-full items-center justify-center ${activeFilter === category ? "bg-secondary" : "bg-primary"}`}
+            onPress={() => handleFilterPress(category)}
+          >
+            <Text className="text-black text-center align-middle font-bold">
+              {category}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </ScrollView>
+  </>
+);
+
 const Store = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const params = useLocalSearchParams();
@@ -40,11 +91,11 @@ const Store = () => {
     setIsFavorite((prev) => {
       if (prev.some((id) => id === product.id)) {
         console.log("removing from favorites: ", product.id);
-        alert("Removed from favorites");
+        alert("Removed " + product.flavor + " from favorites");
         return prev.filter((id) => id !== product.id);
       } else {
         console.log("adding to favorites: ", product.id);
-        alert("Added to favorites");
+        alert("Added " + product.flavor + " to favorites");
         return [...prev, product.id];
       }
     });
@@ -103,11 +154,11 @@ const Store = () => {
     return filtered;
   }, [products, searchQuery, activeFilter, favoriteIds]);
 
-  if (typeof params.filter === "string") {
-    useEffect(() => {
+  useEffect(() => {
+    if (typeof params.filter === "string") {
       setActiveFilter(params.filter as string);
-    }, [params.filter]);
-  }
+    }
+  }, [params.filter]);
 
   const iceCreamProducts = filteredProducts.filter(
     (product) => product.type === "icecream",
@@ -130,57 +181,15 @@ const Store = () => {
       : []),
   ];
 
-  const ListHeader = () => (
-    <>
-      <Header />
-      <View pointerEvents="none">
-        <Image
-          source={images.iceCreamBackground}
-          className="w-full mb-5 z-0 overflow-hidden"
-        />
-        <Image
-          source={images.happyCow}
-          className="w-[400px] h-[400px] absolute -top-[25px] left-[5px] right-[50px] z-10"
-          resizeMode="contain"
-        />
-      </View>
-
-      <View className="flex-row items-center justify-center px-10">
-        <SearchBar
-          placeHolder="Search for a cool flavor MOOOOO"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        <Image source={icons.filter} className="w-10 h-10" />
-      </View>
-
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        className="w-full h-20"
-      >
-        <View className="justify-between flex-row gap-6 mt-4 px-4">
-          {["Popular", "Ice Cream", "Meat", "Favorites"].map((category) => (
-            <TouchableOpacity
-              key={category}
-              className={`h-10 w-fit px-10 rounded-full items-center justify-center ${activeFilter === category ? "bg-secondary" : "bg-primary"}`}
-              onPress={() => handleFilterPress(category)}
-            >
-              <Text className="text-black text-center align-middle font-bold">
-                {category}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
-    </>
-  );
-
   return (
     <View className="flex-1 bg-white">
       {isLoading && (
         <View className="flex flex-col items-center justify-center top-auto">
-          <ActivityIndicator size="large" color="black" />
+          <ActivityIndicator
+            size="large"
+            color="black"
+            className="justify-center items-center"
+          />
           <Text className="text-black mt-2 text-center align-middle">
             Loading...
           </Text>
@@ -208,7 +217,14 @@ const Store = () => {
             className="w-full h-full"
             sections={sections}
             keyExtractor={(row: any[]) => row.map((item) => item.id).join("-")}
-            ListHeaderComponent={<ListHeader />}
+            ListHeaderComponent={
+              <ListHeader
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                activeFilter={activeFilter}
+                handleFilterPress={handleFilterPress}
+              />
+            }
             renderSectionHeader={({ section }) => (
               <Text className="text-lg font-bold px-5 mt-3 mb-3 text-center">
                 {section.title}
@@ -235,7 +251,11 @@ const Store = () => {
 };
 
 const noProducts = () => (
-  <View className="w-full h-32 items-center justify-center mt-20 gap-4">
+  <View className="w-full h-32 items-center justify-center mt-[75px] gap-4">
+    <Image
+      source={images.sadCow}
+      className="w-60 h-60 mx-auto mt-5 items-center rounded-full p-5 bg-primary/30"
+    />
     <Text className="text-gray-500 text-3xl px-6 text-center">
       We&apos;re sorry, there are no products available in this category.
     </Text>

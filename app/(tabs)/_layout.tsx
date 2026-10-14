@@ -74,6 +74,8 @@ export default function TabsLayout() {
           borderWidth: 0,
           borderColor: "transparent",
           paddingHorizontal: 10,
+          zIndex: 100,
+          elevation: 100,
         },
       }}
     >

@@ -1,26 +1,32 @@
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
+import React from "react";
 import { AuthProvider, useAuth } from "../context/authContext";
 import "./globals.css";
 
-export const unstable_settings = {
-  anchor: "(tabs)",
-};
-
 function InitialLayout() {
   const { user, loading } = useAuth();
+  const router = useRouter();
+
+  // Redirect once auth state is known. Hooks must run unconditionally,
+  // so we call `useRouter` and `useEffect` before returning early.
+  React.useEffect(() => {
+    if (loading) return;
+    if (user) {
+      router.replace("/");
+    } else {
+      router.replace("/intro");
+    }
+  }, [loading, user, router]);
 
   if (loading) return null;
-  user && console.log("User is logged in:", user);
 
   return (
-    <Stack>
-      <Stack.Protected guard={!!user}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(screens)" options={{ headerShown: false }} />
-      </Stack.Protected>
-      <Stack.Protected guard={!user}>
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      </Stack.Protected>
+    <Stack screenOptions={{ headerShown: false }}>
+      {/* Register screens unconditionally so the router can resolve them */}
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="(screens)" />
+      <Stack.Screen name="flavor/[id]" />
+      <Stack.Screen name="(auth)" />
     </Stack>
   );
 }

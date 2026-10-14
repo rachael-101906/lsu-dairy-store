@@ -1,10 +1,9 @@
 import { useAuth } from "@/context/authContext";
-import { couponGeneration } from "@/services/couponService";
 import { db } from "@/services/firebase";
-import { Link } from "expo-router";
-import { doc, getDoc } from "firebase/firestore";
+import { router } from "expo-router";
+import { doc, onSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { Image, Text, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import { icons } from "../constants/icons";
 import { images } from "../constants/images";
 
@@ -12,41 +11,24 @@ export default function PointsCard() {
   const [points, setPoints] = useState(0);
   const { user } = useAuth();
 
-  if (!user) {
-    return null;
-  }
-
-  // Fetch points from Firestore on component mount and whenever user or points change
   useEffect(() => {
-    const fetchPoints = async () => {
-      try {
-        const response = await getDoc(doc(db, "users", user?.uid));
-        if (response.exists()) {
-          setPoints(response.data().points || 0);
-        }
-      } catch (error) {
-        console.error("Error fetching points:", error);
+    if (!user?.uid) {
+      return;
+    }
+
+    const pointsRef = doc(db, "users", user?.uid);
+    const unsubscribe = onSnapshot(pointsRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const userData = snapshot.data();
+        setPoints(userData.points || 0);
       }
-    };
-    fetchPoints();
+    });
+    return () => unsubscribe();
   }, [user]);
 
-  // Check if points have reached or exceeded 1000 and generate coupon if so
-  useEffect(() => {
-    const generateCoupon = async () => {
-      try {
-        if (points >= 1000) {
-          await couponGeneration(user?.uid || "", "active", "", "", new Date());
-          alert(
-            "Congratulations! You've earned a coupon for a FREE scoop of ice cream! Check your rewards for details.",
-          );
-        }
-      } catch (error) {
-        console.error("Error generating coupon:", error);
-      }
-    };
-    generateCoupon();
-  }, [points]);
+  if (!user || !user.uid) {
+    return null;
+  }
 
   return (
     <>
@@ -69,41 +51,95 @@ export default function PointsCard() {
                 Rewards Balance
               </Text>
             </View>
-            <Link href="/rewards">
-              <View className="hover:bg-gray-200">
-                <Text className="text-primary font-bold text-sm mt-6 border-b border-primary right-10">
-                  Rewards Info
-                </Text>
-              </View>
-            </Link>
+            <TouchableOpacity onPress={() => router.push("/rewards")}>
+              <Text className="text-primary hover:bg-primary/20 font-bold text-sm mt-6 border-b border-primary right-10">
+                Rewards Info
+              </Text>
+            </TouchableOpacity>
           </View>
           {/* Reward Progress Bar */}
-          <View className="flex-row items-center justify-center gap-x-2">
-            <Image source={icons.rewardFill} className="w-10 h-20 m-1" />
+          <View className="flex-row items-center justify-center gap-x-2 m-1">
+            {/* First Reward Icon */}
+            {points >= 0 && points < 100 ? (
+              <Image source={icons.rewardUnfilled} className="w-10 h-20" />
+            ) : points >= 100 && points < 200 ? (
+              <Image
+                source={icons.rewardHalfFilled}
+                className="w-10 h-20 m-1"
+              />
+            ) : points >= 200 ? (
+              <Image source={icons.rewardFill} className="w-10 h-20" />
+            ) : (
+              <Image source={icons.rewardUnfilled} className="w-10 h-20" />
+            )}
+
             <Image
               source={images.rewardLineGray}
               className="w-5 h-1"
               resizeMode="contain"
             />
-            <Image source={icons.rewardHalfFilled} className="w-10 h-20" />
+
+            {/* Second Reward Icon */}
+            {points >= 200 && points < 300 ? (
+              <Image source={icons.rewardUnfilled} className="w-10 h-20" />
+            ) : points >= 300 && points < 400 ? (
+              <Image source={icons.rewardHalfFilled} className="w-10 h-20" />
+            ) : points >= 400 ? (
+              <Image source={icons.rewardFill} className="w-10 h-20" />
+            ) : (
+              <Image source={icons.rewardUnfilled} className="w-10 h-20" />
+            )}
+
             <Image
               source={images.rewardLineGray}
               className="w-5 h-1"
               resizeMode="contain"
             />
-            <Image source={icons.rewardUnfilled} className="w-10 h-20" />
+
+            {/* Third Reward Icon */}
+            {points >= 400 && points < 500 ? (
+              <Image source={icons.rewardUnfilled} className="w-10 h-20" />
+            ) : points >= 500 && points < 600 ? (
+              <Image source={icons.rewardHalfFilled} className="w-10 h-20" />
+            ) : points >= 600 ? (
+              <Image source={icons.rewardFill} className="w-10 h-20" />
+            ) : (
+              <Image source={icons.rewardUnfilled} className="w-10 h-20" />
+            )}
+
             <Image
               source={images.rewardLineGray}
               className="w-5 h-1"
               resizeMode="contain"
             />
-            <Image source={icons.rewardUnfilled} className="w-10 h-20" />
+
+            {/* Fourth Reward Icon */}
+            {points >= 600 && points < 700 ? (
+              <Image source={icons.rewardUnfilled} className="w-10 h-20" />
+            ) : points >= 700 && points < 800 ? (
+              <Image source={icons.rewardHalfFilled} className="w-10 h-20" />
+            ) : points >= 800 ? (
+              <Image source={icons.rewardFill} className="w-10 h-20" />
+            ) : (
+              <Image source={icons.rewardUnfilled} className="w-10 h-20" />
+            )}
+
             <Image
               source={images.rewardLineGray}
               className="w-5 h-1"
               resizeMode="contain"
             />
-            <Image source={icons.rewardUnfilled} className="w-10 h-20" />
+
+            {/* Fifth Reward Icon */}
+            {points >= 800 && points < 900 ? (
+              <Image source={icons.rewardUnfilled} className="w-10 h-20" />
+            ) : points >= 900 && points < 1000 ? (
+              <Image source={icons.rewardHalfFilled} className="w-10 h-20" />
+            ) : points >= 1000 ? (
+              <Image source={icons.rewardFill} className="w-10 h-20" />
+            ) : (
+              <Image source={icons.rewardUnfilled} className="w-10 h-20" />
+            )}
           </View>
         </View>
       </View>

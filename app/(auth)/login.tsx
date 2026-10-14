@@ -47,20 +47,6 @@ export default function Login() {
     }
   };
 
-  const handleAdminLogin = async () => {
-    try {
-      setLoading(true);
-      await login("admin@gmail.com", "puppy!");
-    } catch (error) {
-      alert(
-        (error as Error).message ||
-          "An error occurred during admin login. Please try again.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleTogglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
@@ -113,7 +99,6 @@ export default function Login() {
                 secureTextEntry={!showPassword}
                 value={password}
                 onChangeText={setPassword}
-                autoComplete="current-password"
                 textContentType="password"
                 importantForAutofill="yes"
                 placeholderTextColor="#999"

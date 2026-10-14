@@ -1,9 +1,6 @@
 import PointsCard from "@/components/PointsCard";
 import { useAuth } from "@/context/authContext";
-import { db } from "@/services/firebase";
 import { router } from "expo-router";
-import { doc, getDoc } from "firebase/firestore";
-import { useEffect, useState } from "react";
 import {
   Image,
   ImageBackground,
@@ -17,33 +14,26 @@ import { icons } from "../../constants/icons";
 import { images } from "../../constants/images";
 
 export default function Home() {
-  const [points, setPoints] = useState(0);
   const { user } = useAuth();
-
-  useEffect(() => {
-    const fetchPoints = async () => {
-      try {
-        const response = await getDoc(doc(db, "users", user?.uid));
-        if (response.exists()) {
-          setPoints(response.data().points || 0);
-        }
-      } catch (error) {
-        console.error("Error fetching points:", error);
-      }
-    };
-    fetchPoints();
-  }, [user, points]);
+  if (!user || !user.uid) {
+    throw new Error("User not authenticated");
+  }
 
   return (
     <>
       <Header />
       <View className="flex-1 justify-center items-center">
-        <ImageBackground
-          source={images.indexBackground}
-          className="absolute w-full h-full mt-2"
-          resizeMode="cover"
-        />
-        <View className="w-40 h-40 absolute top-20 z-10 mb-10">
+        <View pointerEvents="none" className="absolute w-full h-full mt-2">
+          <ImageBackground
+            source={images.indexBackground}
+            className="w-full h-full"
+            resizeMode="cover"
+          />
+        </View>
+        <View
+          pointerEvents="none"
+          className="w-40 h-40 absolute top-20 z-10 mb-10"
+        >
           <Image
             className="w-full h-full"
             source={images.dairyStoreLogo}
@@ -69,7 +59,7 @@ export default function Home() {
                 {["FAQs", "Invite", "History", "Location"].map((category) => (
                   <TouchableOpacity
                     key={category}
-                    className="h-10 w-fit px-10 rounded-full items-center justify-center bg-primary/30 border border-black/20"
+                    className="h-10 w-fit px-10 rounded-full items-center justify-center bg-primary/30 border border-black"
                     onPress={() => alert(`${category} filter coming soon!`)}
                   >
                     <Text className="text-black text-center align-middle font-normal">

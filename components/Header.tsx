@@ -9,29 +9,25 @@ export default function Header() {
   const route = useRouter();
 
   return (
-    <View className="flex-row justify-center items-center absolute top-12 z-10 gap-10 w-full">
+    <View
+      pointerEvents="box-none"
+      className="flex-row justify-center items-center absolute top-12 z-10 gap-10 w-full"
+    >
       <Text className="text-xl text-black font-bold mt-5 px-4 mb-3 z-10 bg-white rounded-full text-wrap py-1">
         Hey there, {displayName}!
       </Text>
       <View className="flex-row gap-4">
-        <TouchableOpacity
-          onPress={() =>
-            route.push({
-              pathname: "/(tabs)/store",
-              params: { filter: "Favorites" },
-            })
-          }
-        >
+        <TouchableOpacity onPress={() => route.push("/store?filter=Favorites")}>
           <Image
             source={icons.blackHeart}
             className="w-10 h-10 "
             resizeMode="contain"
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => route.push("/(screens)/Account")}>
+        <TouchableOpacity onPress={() => route.push("/Account")}>
           <Image source={icons.account} className="w-10 h-10" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => route.push("/(screens)/Settings")}>
+        <TouchableOpacity onPress={() => route.push("/Settings")}>
           <Image source={icons.settings} className="w-10 h-10" />
         </TouchableOpacity>
       </View>
